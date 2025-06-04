@@ -1,105 +1,121 @@
 import { useEffect, useState } from "react";
-import { ConfigProvider, Table, Form, Input, DatePicker } from "antd";
+import {
+  ConfigProvider,
+  Form,
+  Input,
+  DatePicker,
+  Card,
+  Button,
+  Modal,
+} from "antd";
 import moment from "moment";
 import { IoIosSearch } from "react-icons/io";
 import { FaAngleLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { GoInfo } from "react-icons/go";
-import { useGetAllUsersQuery } from "../../../redux/features/user/userApi";
 
 const { Item } = Form;
 
 const Users = () => {
-  const { data, isFetching, isError, error } = useGetAllUsersQuery({
-    from: 0,
-    to: 10,
-  });
-
-  console.log("Fetched Data:", data?.data?.attributes);
-
   const [searchText, setSearchText] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [dataSource, setDataSource] = useState([]); // ✅ Store filtered data
+  const [dataSource, setDataSource] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const allUsers = data?.data?.attributes;
+  const demoUsers = [
+    {
+      id: 1,
+      fullName: "Anika Alam",
+      accountID: "1234567890",
+      email: "abc@gmail.com",
+      phoneNumber: "+880 18456229",
+      address_line1: "1234 Elm Street",
+      createdAt: "2025-05-02T00:00:00Z",
+      imageUrl: "https://via.placeholder.com/150",
+      status: "Active",
+      gender: "Female",
+    },
+    {
+      id: 2,
+      fullName: "Anika Alam",
+      accountID: "1234567890",
+      email: "abc@gmail.com",
+      phoneNumber: "+880 18456229",
+      address_line1: "1234 Elm Street",
+      createdAt: "2025-05-02T00:00:00Z",
+      imageUrl: "https://via.placeholder.com/150",
+      status: "Active",
+      gender: "Female",
+    },
+    {
+      id: 3,
+      fullName: "Anika Alam",
+      accountID: "1234567890",
+      email: "abc@gmail.com",
+      phoneNumber: "+880 18456229",
+      address_line1: "1234 Elm Street",
+      createdAt: "2025-05-02T00:00:00Z",
+      imageUrl: "https://via.placeholder.com/150",
+      status: "Active",
+      gender: "Female",
+    },
+    {
+      id: 4,
+      fullName: "Anika Alam",
+      accountID: "1234567890",
+      email: "abc@gmail.com",
+      phoneNumber: "+880 18456229",
+      address_line1: "1234 Elm Street",
+      createdAt: "2025-05-02T00:00:00Z",
+      imageUrl: "https://via.placeholder.com/150",
+      status: "Active",
+      gender: "Female",
+    },
+    // Add more users if needed
+  ];
 
-  // ✅ **Update `dataSource` when API call completes**
   useEffect(() => {
-    if (allUsers) {
-      const formattedUsers = allUsers.map((user, index) => ({
-        id: user.id || user._id, // Ensure ID exists
-        si: index + 1,
-        fullName: user.fullName,
-        accountID: user.accountID,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        address_line1: user.address_line1,
-        createdAt: user.createdAt,
-        imageUrl: user.image?.url,
-        status: user.status,
-        gender: user.gender,
-      }));
-      setDataSource(formattedUsers);
-    }
-  }, [allUsers]);
+    setDataSource(demoUsers);
+  }, []);
 
-  // ✅ **Search Filter**
   useEffect(() => {
     if (searchText.trim() === "") {
-      setDataSource(allUsers || []);
+      setDataSource(demoUsers);
     } else {
       setDataSource(
-        allUsers?.filter(
+        demoUsers.filter(
           (user) =>
             user.fullName?.toLowerCase().includes(searchText.toLowerCase()) ||
             user.email?.toLowerCase().includes(searchText.toLowerCase()) ||
-            String(user.phone)?.includes(searchText)
-        ) || []
+            String(user.phoneNumber)?.includes(searchText)
+        )
       );
     }
-  }, [searchText, allUsers]);
+  }, [searchText]);
 
-  // ✅ **Date Filter**
   useEffect(() => {
     if (!selectedDate) {
-      setDataSource(allUsers || []);
+      setDataSource(demoUsers);
     } else {
       const formattedDate = selectedDate.format("YYYY-MM-DD");
       setDataSource(
-        allUsers?.filter((user) => moment(user.createdAt).format("YYYY-MM-DD") === formattedDate) || []
+        demoUsers.filter(
+          (user) => moment(user.createdAt).format("YYYY-MM-DD") === formattedDate
+        )
       );
     }
-  }, [selectedDate, allUsers]);
+  }, [selectedDate]);
 
-  const columns = [
-    {
-      title: "#SI", dataIndex: "si", key: "si",
-      render: (text, record, index) => {
-        return <span>{index + 1}</span>;
-      }
+  const showModal = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
 
-    },
-    // { title: "Account ID", dataIndex: "accountID", key: "accountID" },
-    { title: "Full Name", dataIndex: "fullName", key: "fullName" },
-    { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Phone Number", dataIndex: "phoneNumber", key: "phoneNumber" },
-    {
-      title: "Joined Date",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date) => moment(date).format("DD MMM YYYY"),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Link to={`/users/${record.id}`}>
-          <GoInfo className="text-2xl" />
-        </Link>
-      ),
-    },
-  ];
+  const handleBlock = () => {
+    alert(`Blocked user: ${selectedUser.fullName}`);
+    setIsModalOpen(false);
+  };
 
   return (
     <section>
@@ -133,28 +149,85 @@ const Users = () => {
       <ConfigProvider
         theme={{
           components: {
-            Table: {
-              headerBg: "#92b8c0",
-              headerColor: "#000",
-              headerBorderRadius: 5,
+            Card: {
+              bodyStyle: {
+                padding: 16,
+              },
             },
           },
         }}
       >
-        <Table
-          pagination={{
-            position: ["bottomCenter"],
-            current: currentPage,
-            onChange: setCurrentPage,
-          }}
-          scroll={{ x: "max-content" }}
-          responsive={true}
-          columns={columns}
-          dataSource={dataSource}
-          rowKey="id"
-          loading={isFetching}
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {dataSource?.map((user) => (
+            <div
+              key={user.id}
+              className="border border-[#4b1c2f] shadow-[0_3px_10px_#4b1c2f60] p-4 rounded-lg flex items-start gap-4"
+            >
+              <img
+                src="https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?semt=ais_items_boosted&w=740"
+                alt="avatar"
+                className="w-16 h-16 rounded-full object-cover"
+              />
+              <div className="flex-1 grid grid-cols-2 gap-2">
+                <div>
+                  <p className="text-sm text-gray-500">User Name</p>
+                  <p className="font-medium">{user.fullName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Joining Date</p>
+                  <p className="font-medium">
+                    {moment(user.createdAt).format("D MMM, YYYY")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Telephone Number</p>
+                  <p className="font-medium">{user.phoneNumber}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="font-medium">{user.email}</p>
+                </div>
+                <div className="col-span-2 flex justify-end mt-2">
+                  <Button
+                    danger
+                    type="default"
+                    onClick={() => showModal(user)}
+                  >
+                    Block
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </ConfigProvider>
+
+      <Modal
+        title="User Details"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={[
+          <Button key="back" onClick={() => setIsModalOpen(false)}>
+            Go Back
+          </Button>,
+          <Button key="submit" type="primary" danger onClick={handleBlock}>
+            Block
+          </Button>,
+        ]}
+      >
+        {selectedUser && (
+          <div className="space-y-2">
+            <p><strong>Full Name:</strong> {selectedUser.fullName}</p>
+            <p><strong>Email:</strong> {selectedUser.email}</p>
+            <p><strong>Phone Number:</strong> {selectedUser.phoneNumber}</p>
+            <p><strong>Account ID:</strong> {selectedUser.accountID}</p>
+            <p><strong>Gender:</strong> {selectedUser.gender}</p>
+            <p><strong>Status:</strong> {selectedUser.status}</p>
+            <p><strong>Address:</strong> {selectedUser.address_line1}</p>
+            <p><strong>Joining Date:</strong> {moment(selectedUser.createdAt).format("D MMM, YYYY")}</p>
+          </div>
+        )}
+      </Modal>
     </section>
   );
 };

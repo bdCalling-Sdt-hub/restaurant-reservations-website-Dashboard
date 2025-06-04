@@ -1,135 +1,93 @@
-import changePasswordImage from "/public/Auth/update-password.png";
-import authLogo from "../../../assets/auth/auth-logo.png";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { IoIosArrowBack } from "react-icons/io";
-import { Form } from "antd"; // Import Ant Design Form
-import CustomInput from "../../../utils/CustomInput";
-import CustomButton from "../../../utils/CustomButton";
-import { toast } from "sonner";
-import { useResetPasswordMutation } from "../../../redux/features/auth/authApi";
+ 
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const NewPassword = () => {
-  const navigate = useNavigate();
-  const { email } = useParams();
-  const [resetPassword, { isLoading }] = useResetPasswordMutation();
-  const jwtToken = localStorage.getItem("jwtToken");
+    // State to toggle password visibility for each field
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  console.log(jwtToken);
+    // Function to toggle password visibility
+    const togglePassword = () => {
+        setShowPassword(prevState => !prevState);
+    };
 
-  const submit = async (values) => {
-    const { password, confirmPassword } = values;
+    // Function to toggle confirm password visibility
+    const toggleConfirmPassword = () => {
+        setShowConfirmPassword(prevState => !prevState);
+    };
 
+    return (
 
-    if (!password || !confirmPassword) {
-      toast.error("Password is required");
-      return;
-    }
+        <div className="flex flex-col md:flex-row min-h-screen">
+            {/* Left side - form */}
+            <div className='md:flex-[2] flex flex-col justify-center items-start px-6 md:px-20 p-20 md:pt-0  bg-white
+                      md:ml-36 md:min-h-screen'>
+                <div className='min-w-80'>
+                    <h2 className='text-3xl font-medium text-center'>Update Password</h2>
+                    <p className='text-center mt-5 text-gray-600'>Please Enter your New Password and Confirm Password</p>
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match!");
-      return;
-    }
+                    <div className='mt-5'>
+                        <label className='font-semibold' htmlFor="password">Password</label>
+                        <div className='relative'>
+                            <input
+                                placeholder='Enter your password'
+                                className='mt-2 w-full p-2 border border-[#4b1c2f] rounded-md focus:outline-0 ring-0 bg-white'
+                                type={showPassword ? "text" : "password"} // Toggle password visibility
+                                name="password"
+                                id="password"
+                            />
+                            {/* Show/Hide Password Icon */}
+                            <button
+                                type="button"
+                                onClick={togglePassword}
+                                className='absolute cursor-pointer right-3 top-[30px] transform -translate-y-1/2 text-gray-500'
+                            >
+                                {!showPassword ? '🙈' : '👁️'}
+                            </button>
+                        </div>
+                    </div>
 
+                    <div className='mt-5'>
+                        <label className='font-semibold' htmlFor="confirm-password">Confirm Password</label>
+                        <div className='relative'>
+                            <input
+                                placeholder='Confirm your password'
+                                className='mt-2 w-full p-2 rounded border border-[#4b1c2f]rounded-md focus:outline-0 ring-0 bg-white'
+                                type={showConfirmPassword ? "text" : "password"} // Toggle confirm password visibility
+                                name="confirm-password"
+                                id="confirm-password"
+                            />
+                            {/* Show/Hide Password Icon */}
+                            <button
+                                type="button"
+                                onClick={toggleConfirmPassword}
+                                className='absolute cursor-pointer right-3 top-[30px] transform -translate-y-1/2 text-gray-500'
+                            >
+                                {!showConfirmPassword ? '🙈' : '👁️'}
+                            </button>
+                        </div>
+                    </div>
 
-    try {
-      const res = await resetPassword({
-        jwtToken,
-        newPassword: password
-      });
-      console.log(res);
-      if (res.error) {
-        toast.error(res.error.data.message);
-      }
-      if (res.data) {
-        toast.success(res.data.message);
-        navigate("/auth/login");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  };
-
-  return (
-    <div className="w-full   h-full md:h-screen md:flex justify-around ">
-      {/* <img
-            src={authLogo}
-            className="w-[147px] h-[152px] mx-auto md:my-20 md:mx-5"
-            alt="Sign in illustration"
-      /> */}
-      <div className="w-full max-w-7xl mx-auto border-shadow rounded-md h-[70%] md:my-28 grid grid-cols-1 md:grid-cols-2 place-content-center px-5 py-10 gap-8 bg-white md:mx-10">
-        <div>
-          <img
-            src={changePasswordImage}
-            className="w-full h-full mx-auto"
-            alt="Change Password Illustration"
-          />
+                    <Link to={'/login'} className='mt-5 block'>
+                        <button className='cursor-pointer w-full p-2 bg-[#4b1c2f] font-semibold text-white rounded-md'>
+                            Update
+                        </button>
+                    </Link>
+                </div>
+            </div>
+            {/* Right side - image with purple background */}
+            <div className="md:flex-1  bg-[#4b1c2f] md:flex hidden justify-center items-center relative
+                    mt-8 md:mt-0 h-64 md:h-auto">
+                <img
+                    src="/Auth/all.png" // your image path
+                    alt="Cafe interior"
+                    className="object-cover md:block hidden max-w-full max-h-full md:absolute md:left-0 md:-ml-[50%] shadow-lg"
+                    style={{ maxHeight: '600px' }}
+                />
+            </div>
         </div>
-        <div className="mt-16">
-          <div className="mb-5">
-            <h1 className="font-semibold text-xl flex items-center gap-2">
-              <Link to="/auth/login">
-                <IoIosArrowBack />
-              </Link>
-              Update Password
-            </h1>
-          </div>
-
-          {/* Ant Design Form */}
-          <Form
-            layout="vertical"
-            onFinish={submit} // Ant Design's form submission handler
-            initialValues={{ password: "", confirmPassword: "" }} // Initial values
-          >
-            {/* CustomInput wrapped inside Form.Item for validation */}
-            <Form.Item
-              label="New Password"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your new password",
-                },
-              ]}
-            >
-              <CustomInput isPassword type="password" placeholder="Password" />
-            </Form.Item>
-
-            <Form.Item
-              label="Confirm Password"
-              name="confirmPassword"
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your password",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error("Passwords do not match!"));
-                  },
-                }),
-              ]}
-            >
-              <CustomInput
-                isPassword
-                type="password"
-                placeholder="Confirm Password"
-              />
-            </Form.Item>
-
-            {/* CustomButton for submission */}
-            <Form.Item>
-              <button className="w-full bg-[#84df91] text-xl font-semibold text-white rounded-md py-2" loading={isLoading} border >
-                Update Password
-              </button>
-            </Form.Item>
-          </Form>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default NewPassword;

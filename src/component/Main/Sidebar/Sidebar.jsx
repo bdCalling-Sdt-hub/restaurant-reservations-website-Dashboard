@@ -3,7 +3,7 @@ import { useState } from "react";
 import { IoIosLogOut } from "react-icons/io";
 import { IoBagHandleSharp, IoSettingsSharp } from "react-icons/io5";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import logo from "/public/logo/dashboard_log.png";
+import logo from "/Auth/dashboardlogo.png";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../../redux/features/auth/authSlice";
 import { RiMoneyDollarCircleFill } from "react-icons/ri";
@@ -14,6 +14,9 @@ import { HiLightBulb } from "react-icons/hi";
 import { FaRegMoneyBill1, FaSackDollar } from "react-icons/fa6";
 import { GoHomeFill } from "react-icons/go";
 import { GrDocumentImage } from "react-icons/gr";
+import { CiCalendar } from "react-icons/ci";
+import { BiDirections } from "react-icons/bi";
+import { FiKey } from "react-icons/fi";
 
 const sidebarItems = [
   {
@@ -29,34 +32,34 @@ const sidebarItems = [
 
   {
     path: "/lawyer",
-    name: "Lawyer",
-    icon: <FaUsers className="size-6" />,
+    name: "Booking Management",
+    icon: <CiCalendar className="size-6" />,
   },
   {
     path: "/assets",
-    name: "Categories",
-    icon: <GoHomeFill className="size-6" />,
+    name: "Bid Management",
+    icon: <BiDirections className="size-6" />,
   },
   {
     path: "/all-document",
-    name: "All Document",
-    icon: <GrDocumentImage className="size-5" />,
+    name: "Api Keys Management",
+    icon: <FiKey className="size-5" />,
   },
-  {
-    path: "/collaborator",
-    name: "Collaborator ",
-    icon: <FaUsers className="size-6" />,
-  },
-  {
-    path: "/subscription",
-    name: "Subscription ",
-    icon: <MdOutlineContactPage className="size-6" />,
-  },
-  {
-    path: "/earnings",
-    name: "Earnings ",
-    icon: <FaRegMoneyBill1 className="size-6" />,
-  },
+  // {
+  //   path: "/collaborator",
+  //   name: "Collaborator ",
+  //   icon: <FaUsers className="size-6" />,
+  // },
+  // {
+  //   path: "/subscription",
+  //   name: "Subscription ",
+  //   icon: <MdOutlineContactPage className="size-6" />,
+  // },
+  // {
+  //   path: "/earnings",
+  //   name: "Earnings ",
+  //   icon: <FaRegMoneyBill1 className="size-6" />,
+  // },
   // {
   //   path: "/user-request",
   //   name: "Super User Request",
@@ -107,9 +110,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   return (
     <div>
       {/* Desktop Sidebar */}
-      <div className="hidden overflow-y-auto md:block w-full md:w-[200px] lg:w-[250px] xl:w-[280px] h-full bg-[#038c6d] fixed shadow-2xl">
-        <Link to={"/"} className="flex flex-col justify-center items-center pt-5 gap-2 bg-white mb-10 text-black">
-          <img src={logo} alt="logo" className="w-[60px] mb-5 " />
+      <div className="hidden overflow-y-auto md:block w-full md:w-[200px] lg:w-[250px] xl:w-[280px] h-full bg-[#4b1c2f] fixed shadow-2xl">
+        <Link to={"/"} className="flex flex-col justify-center items-center pt-5 gap-2  mb-10 ">
+          <img src={logo} alt="logo" className="w-[150px] mb-5 " />
         </Link>
         <ul className="flex flex-col gap-5">
           {sidebarItems.map((item) => (
@@ -117,7 +120,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
-                `w-[80%] mx-auto px-5 py-2 flex justify-start items-center gap-3 text-white ${isActive ? "bg-white !text-black border-l-4 border-[#f13919]" : ""
+                `w-[80%] mx-auto px-5 py-2 flex justify-start items-center gap-3 text-white ${isActive ? "border border-[#fac955] shadow-[0_0_10px_#fac955] rounded-md !text-[#ffffff]  " : ""
                 }`
               }
             >
@@ -139,10 +142,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
       {/* Mobile Sidebar */}
       <div
-        className={`fixed top-0 overflow-y-auto left-0 z-40 w-64 h-full bg-[#038c6d] shadow-lg transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 overflow-y-auto left-0 z-40 w-64 h-full bg-[#4b1c2f] shadow-lg transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } transition-transform duration-300 ease-in-out md:hidden`}
       >
-        <div className="flex flex-col justify-center items-center pt-5 gap-2 bg-white text-white">
+        <div className="flex flex-col justify-center items-center pt-5 gap-2 ">
           <img src={logo} alt="logo" className="h-20 mb-5" />
         </div>
         <ul className="flex flex-col gap-3 mt-10">
@@ -152,7 +155,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               to={item.path}
               onClick={toggleSidebar} // Close sidebar on link click
               className={({ isActive }) =>
-                `w-[70%] mx-auto px-5 py-2 flex items-center gap-3 text-white ${isActive ? "bg-[#038c6d] " : ""
+                `w-[70%] mx-auto px-5 py-2 flex items-center gap-3 text-white ${isActive ? "bg-[#4b1c2f] " : ""
                 }`
               }
             >
@@ -183,7 +186,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             <div className="flex justify-between">
               <button
                 onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="bg-[#4b1c2f] text-white px-4 py-2 rounded hover:bg-[#6b203e] "
               >
                 Yes
               </button>

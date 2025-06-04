@@ -1,112 +1,57 @@
-import otpImage from "/public/Auth/otp.png";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import authLogo from "../../../assets/auth/auth-logo.png";
-import { IoIosArrowBack } from "react-icons/io";
-import OTPInput from "react-otp-input";
-import { useState } from "react";
-import CustomButton from "../../../utils/CustomButton";
-import {
-  useForgotPasswordMutation,
-  useVerifyEmailMutation,
-} from "../../../redux/features/auth/authApi";
-import { toast } from "sonner";
+
+import React, { useState } from 'react';
+import OTPInput from 'react-otp-input';
+import { Link } from 'react-router-dom';
 
 const Otp = () => {
-  const [otp, setOtp] = useState("");
-  const { email } = useParams();
-  const navigate = useNavigate();
-  const [forgotPassword] = useForgotPasswordMutation();
-  const [verifyOtp, { isLoading }] = useVerifyEmailMutation();
-  const handleOtpChange = (otpValue) => {
-    setOtp(otpValue);
-  };
-  const handleMatchOtp = async () => {
-    try {
-      const res = await verifyOtp({
-        otp
-      }).unwrap();
-      console.log(res);
-      if (res.error) {
-        toast.error(res?.error?.data?.message);
-      }
-      if (res) {
-        localStorage.setItem("jwtToken", res?.changePasswordToken);
-        toast.success(res?.data?.message);
-        navigate(`/auth/new-password/${email}`);
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  };
 
-  const handleResendPassword = async () => {
-    try {
-      const res = await forgotPassword({ email });
-      if (res.error) {
-        toast.error(res?.error?.data?.message);
-        console.log(res.error);
-      }
-      if (res.data) {
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  };
+  const [otp, setOtp] = useState('');
+  console.log(otp);
+
   return (
-    <div className="w-full  h-full md:h-screen md:flex justify-around ">
-      {/* <img
-          src={authLogo}
-          className="w-[147px] h-[152px] mx-auto md:my-20 md:mx-5"
-          alt="Sign in illustration"
-    /> */}
-      <div className="w-full max-w-7xl mx-auto border-shadow rounded-md h-[70%] md:my-28 grid grid-cols-1 md:grid-cols-2 place-content-center px-5 py-15 gap-8 bg-white md:mx-10 ">
-        <div>
-          <img src={otpImage} className="w-3/4 h-[461px] mx-auto" alt="" />
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* Left side - form */}
+      <div className='md:flex-[2] flex flex-col justify-center items-start px-6 md:px-20 p-20 md:pt-0  bg-white
+                      md:ml-36 md:min-h-screen'>
+        <div className='min-w-96'>
+          <h2 className='text-3xl font-medium '>Verify OTP</h2>
+          <p className=' mt-5 text-gray-600'>Please Enter the OTP sented to your email . </p>
+          <div className='mt-5'>
+            <label className='font-semibold' htmlFor="email">Enter OTP </label>
+            <OTPInput
+              value={otp}
+              onChange={setOtp}
+              numInputs={6}
+              containerStyle={{ justifyContent: 'space-between' }}
+              renderInput={(props) => (
+                <input
+                  {...props} // Spread props from OTPInput (like value, onChange, etc.)
+                  className="!border-b-2  border-[#4b1c2f]  px-2 py-1" // Custom styles for the input
+                  style={{ width: '50px', height: '50px', textAlign: 'center' }} // Optional: adjust input size if needed
+                />
+              )}
+            />
+
+
+          </div>
+          <Link to="/update-password" className='mt-5 block'>
+            <button className='cursor-pointer w-full p-2 bg-[#4b1c2f]  font-semibold text-white rounded-md'>Verify</button>
+          </Link>
         </div>
-        <div className="mt-16 md:mt-32">
-          <div className="mb-5 space-y-5">
-            <h1 className="font-semibold text-xl flex items-center gap-2">
-              <Link to="/auth/login">
-                <IoIosArrowBack />
-              </Link>
-              Verify
-            </h1>
-            <h1>{`We'll send a verification code to your email. Check your inbox and enter the code here.`}</h1>
-          </div>
-          <OTPInput
-            value={otp}
-            onChange={handleOtpChange}
-            numInputs={6}
-            renderInput={(props) => <input {...props} />}
-            containerStyle="otp-container"
-            inputStyle={{
-              width: "100%",
-              maxWidth: "6.5rem",
-              height: "3rem",
-              margin: "0 0.5rem",
-              fontSize: "2rem",
-              fontWeight: "bold",
-              borderBottom: "1px solid #4E4E4E",
-              textAlign: "center",
-              outline: "none",
-            }}
-          />
-          <div onClick={handleMatchOtp} className="mt-5">
-            <button className="w-full bg-[#84df91] text-xl font-semibold text-white rounded-md py-2" loading={isLoading} border >
-              Verify
-            </button>
-          </div>
-          <div className="flex justify-between items-center my-4">
-            <h1>Didn’t receive code?</h1>
-            <button onClick={handleResendPassword} className="text-[#4c7e95]">
-              Verify Code
-            </button>
-          </div>
-        </div>
+      </div>
+
+      {/* Right side - image with purple background */}
+      <div className="md:flex-1  bg-[#4b1c2f] md:flex hidden justify-center items-center relative
+                mt-8 md:mt-0 h-64 md:h-auto">
+        <img
+          src="/Auth/all.png" // your image path
+          alt="Cafe interior"
+          className="object-cover md:block hidden max-w-full max-h-full md:absolute md:left-0 md:-ml-[50%] shadow-lg"
+          style={{ maxHeight: '600px' }}
+        />
       </div>
     </div>
   );
-};
+}
 
 export default Otp;

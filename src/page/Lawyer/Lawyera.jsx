@@ -1,34 +1,128 @@
 import React, { useState } from "react";
-import { Table, Modal, Pagination, ConfigProvider, Form, Input, Button, Upload, message } from "antd";
+import { Table, Modal, Pagination, ConfigProvider, Form, Input, Button, message } from "antd";
 import { FaInfoCircle } from "react-icons/fa";
-import { UploadOutlined } from "@ant-design/icons";
-import { useCreateLawyerMutation, useDeleteLawyerMutation, useGetAllLawyerQuery } from "../../redux/features/Lawyer/lawyer";
-import moment from "moment";
-import Url from "../../redux/baseApi/forImageUrl";
 import { MdDeleteForever } from "react-icons/md";
-import Swal from "sweetalert2";
+import moment from "moment";
 
-const Lawyera = () => {
-    // Sample Data
+const CustomerBookings = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedBooking, setSelectedBooking] = useState(null);
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [form] = Form.useForm();
 
-    // Handle "View Details" Modal
+    // Sample data for customer bookings
+    const demoBookings = [
+        {
+            key: "1",
+            userName: "John Doe",
+            email: "johndoe@example.com",
+            restaurantName: "The Gourmet Spot",
+            bookingDateTime: "2025-06-10T19:00:00",
+            numberOfSeats: 4,
+            bookingAmount: "$100",
+            bookingStatus: "Confirmed",
+        },
+        {
+            key: "2",
+            userName: "Jane Smith",
+            email: "janesmith@example.com",
+            restaurantName: "Bistro 101",
+            bookingDateTime: "2025-06-11T18:30:00",
+            numberOfSeats: 2,
+            bookingAmount: "$50",
+            bookingStatus: "Pending",
+        },
+        {
+            key: "3",
+            userName: "Michael Johnson",
+            email: "michaelj@example.com",
+            restaurantName: "Spice Lounge",
+            bookingDateTime: "2025-06-12T20:00:00",
+            numberOfSeats: 6,
+            bookingAmount: "$150",
+            bookingStatus: "Cancelled",
+        },
+    ];
+
+    const columns = [
+        {
+            title: "#SI",
+            dataIndex: "key",
+            key: "key",
+            render: (text, record, index) => index + 1,
+        },
+        {
+            title: "Customer User Name",
+            dataIndex: "userName",
+            key: "userName",
+        },
+        {
+            title: "E-Mail",
+            dataIndex: "email",
+            key: "email",
+        },
+        {
+            title: "Restaurant Name",
+            dataIndex: "restaurantName",
+            key: "restaurantName",
+        },
+        {
+            title: "Booking Date & Time",
+            dataIndex: "bookingDateTime",
+            key: "bookingDateTime",
+            render: (text) => moment(text).format("DD MMM YYYY, hh:mm A"), // Format the date
+        },
+        {
+            title: "Number of Seats",
+            dataIndex: "numberOfSeats",
+            key: "numberOfSeats",
+        },
+        {
+            title: "Booking Amount",
+            dataIndex: "bookingAmount",
+            key: "bookingAmount",
+        },
+        {
+            title: "Booking Status",
+            dataIndex: "bookingStatus",
+            key: "bookingStatus",
+        },
+        {
+            title: "Actions",
+            key: "actions",
+            render: (_, record) => (
+                <div className="flex gap-3">
+                    <FaInfoCircle
+                        className="text-xl cursor-pointer hover:text-blue-500"
+                        onClick={() => showDetails(record)}
+                    />
+                    <MdDeleteForever
+                        className="text-2xl cursor-pointer text-red-600 hover:text-red-500"
+                        onClick={() => handleDelete(record)}
+                    />
+                </div>
+            ),
+        },
+    ];
+
     const showDetails = (record) => {
-        setSelectedUser(record);
+        setSelectedBooking(record);
         setIsModalVisible(true);
     };
 
     const handleCloseModal = () => {
-        setSelectedUser(null);
+        setSelectedBooking(null);
         setIsModalVisible(false);
     };
 
-    // Handle "Add Lawyer" Modal
+    const handleDelete = async (item) => {
+        // Delete logic (e.g., API call)
+        console.log("Deleting booking:", item);
+        message.success(`Booking for ${item.userName} has been deleted!`);
+    };
+
     const handleOpenAddModal = () => {
         setIsAddModalVisible(true);
     };
@@ -38,131 +132,23 @@ const Lawyera = () => {
         form.resetFields(); // Reset form fields after closing
     };
 
-    const [image, setImage] = useState(null);
-
-    const handleImageUpload = (info) => {
-        console.log(info.file?.originFileObj);
-        setImage(info.file?.originFileObj);
+    const handleAddBooking = async (values) => {
+        console.log("Adding new booking:", values);
+        message.success("New booking added!");
+        handleCloseAddModal();
     };
 
-
-    const { data, isLoading, refetch } = useGetAllLawyerQuery();
-    console.log(data?.data);
-
-    const [addLawyer] = useCreateLawyerMutation();
-
-    // Handle Form Submission
-    const handleAddLawyer = async (values) => {
-        const form = new FormData();
-        form.append("lawyer_image", image);
-        form.append("lawyer_name", values.fullName);
-        form.append("lawyer_email", values.email);
-        form.append("lawyer_phone_number", Number(values.phone));
-        form.append("lawyer_experience_in_year", values.yearOfExpriences);
-
-        try {
-            const response = await addLawyer(form).unwrap();
-            console.log(response);
-            if (response?.success) {
-                message.success(response?.message);
-                refetch()
-                handleCloseAddModal(false);
-            }
-        } catch (error) {
-            console.log(error);
-            message.error(error?.data?.message);
-        }
-    };
-
-    const [deleteLawyer] = useDeleteLawyerMutation();
-
-    const handleDelete = async (item) => {
-        const data = { lawyerId: item?.id };
-
-        console.log(data);
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "No, cancel",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const res = await deleteLawyer(data).unwrap();
-                    console.log(res);
-                    if (res?.success) {
-                        message.success(res?.message);
-                        refetch();
-                    }
-                } catch (error) {
-                    console.log(error);
-                    message.error(error?.data?.message);
-                }
-            }
-        })
-
-    }
-
-    // Table Columns
-    const columns = [
-        {
-            title: "#SI",
-            dataIndex: "key",
-            key: "key",
-            render: (text, record, index) => index + 1,
-        },
-        {
-            title: "Full Name",
-            dataIndex: "name",
-            key: "name",
-        },
-        {
-            title: "Email",
-            dataIndex: "email",
-            key: "email",
-        },
-        {
-            title: "Phone Number",
-            dataIndex: "phone",
-            key: "phone",
-        },
-        {
-            title: "Joined Date",
-            dataIndex: "joinedDate",
-            key: "joinedDate",
-            render: (date) => moment(date).format("DD MMM YYYY"),
-        },
-        {
-            title: "Action",
-            key: "action",
-            render: (_, record) => (
-                <div className="flex gap-3">
-                    <FaInfoCircle
-                        className="text-xl cursor-pointer hover:text-blue-500"
-                        onClick={() => showDetails(record)}
-                    />
-                    <MdDeleteForever onClick={() => handleDelete(record)} className="text-2xl cursor-pointer text-red-600 hover:text-red-500" />
-                </div>
-            ),
-        },
-    ];
-
-    // Paginate Data
-    const paginatedData = data?.data?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const paginatedData = demoBookings.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+    );
 
     return (
         <div className="py-10 text-base">
             {/* Header with Add Button */}
             <div className="flex justify-between items-center mb-5">
-                <h2 className="text-2xl font-semibold mb-4">Lawyers List</h2>
-                <button onClick={handleOpenAddModal} className="bg-[#038c6d] text-white text-xl py-2 px-8 rounded">
-                    Add Lawyer
-                </button>
+                <h2 className="text-3xl font-semibold mb-4 text-[#4b1c2f]">Booking List</h2>
+
             </div>
 
             {/* Table with Ant Design ConfigProvider */}
@@ -170,8 +156,8 @@ const Lawyera = () => {
                 theme={{
                     components: {
                         Table: {
-                            headerBg: "#92b8c0",
-                            headerColor: "#000",
+                            headerBg: "#4b1c2f",
+                            headerColor: "#fff",
                             headerBorderRadius: 5,
                         },
                     },
@@ -193,94 +179,91 @@ const Lawyera = () => {
                 <Pagination
                     current={currentPage}
                     pageSize={pageSize}
-                    total={data?.data?.length || 0}
+                    total={demoBookings.length}
                     onChange={setCurrentPage}
                     showSizeChanger={false}
                 />
             </div>
 
-            {/* Lawyer Details Modal */}
+            {/* Booking Details Modal */}
             <Modal
                 open={isModalVisible}
                 onCancel={handleCloseModal}
                 footer={null}
-                title="Lawyer Details"
+                title="Booking Details"
             >
-                {selectedUser && (
+                {selectedBooking && (
                     <div className="text-gray-700">
-                        <p className="my-5 flex items-center justify-between"><strong>Full Name:</strong> {selectedUser.name}</p>
-                        <p className="my-5 flex items-center justify-between"><strong>Email:</strong> {selectedUser.email}</p>
-                        <p className="my-5 flex items-center justify-between"><strong>Phone Number:</strong> {selectedUser.phone}</p>
-                        <p className="my-5 flex items-center justify-between"><strong>Joined Date:</strong> {moment(selectedUser.createdAt).format("DD MMM YYYY")}</p>
-                        <div>
-                            <img className="w-2/4 mx-auto" src={Url + selectedUser.imageUrl} alt="" />
-                        </div>
+                        <p className="my-5 flex items-center justify-between"><strong>Customer Name:</strong> {selectedBooking.userName}</p>
+                        <p className="my-5 flex items-center justify-between"><strong>Email:</strong> {selectedBooking.email}</p>
+                        <p className="my-5 flex items-center justify-between"><strong>Restaurant:</strong> {selectedBooking.restaurantName}</p>
+                        <p className="my-5 flex items-center justify-between"><strong>Booking Date:</strong> {moment(selectedBooking.bookingDateTime).format("DD MMM YYYY, hh:mm A")}</p>
+                        <p className="my-5 flex items-center justify-between"><strong>Number of Seats:</strong> {selectedBooking.numberOfSeats}</p>
+                        <p className="my-5 flex items-center justify-between"><strong>Booking Amount:</strong> {selectedBooking.bookingAmount}</p>
+                        <p className="my-5 flex items-center justify-between"><strong>Status:</strong> {selectedBooking.bookingStatus}</p>
                     </div>
                 )}
             </Modal>
 
-            {/* Add Lawyer Modal */}
+            {/* Add Booking Modal */}
             <Modal
                 open={isAddModalVisible}
                 onCancel={handleCloseAddModal}
                 footer={null}
-                title="Add New Lawyer"
+                title="Add New Booking"
             >
-                <Form form={form} layout="vertical" onFinish={handleAddLawyer}>
+                <Form form={form} layout="vertical" onFinish={handleAddBooking}>
                     <Form.Item
-                        label="Full Name"
-                        name="fullName"
-                        rules={[{ required: true, message: "Please enter full name" }]}
+                        label="Customer Name"
+                        name="customerName"
+                        rules={[{ required: true, message: "Please enter customer name" }]}
                     >
-                        <Input placeholder="Enter full name" />
+                        <Input placeholder="Enter customer name" />
                     </Form.Item>
                     <Form.Item
                         label="Email"
                         name="email"
-                        rules={[
-                            { required: true, message: "Please enter email" },
-                            { type: "email", message: "Enter a valid email" },
-                        ]}
+                        rules={[{ required: true, message: "Please enter email" }, { type: "email", message: "Enter a valid email" }]}
                     >
                         <Input placeholder="Enter email" />
                     </Form.Item>
-
                     <Form.Item
-                        label="Phone Number"
-                        name="phone"
-                        rules={[{ required: true, message: "Please enter phone number" }]}
+                        label="Restaurant Name"
+                        name="restaurantName"
+                        rules={[{ required: true, message: "Please enter restaurant name" }]}
                     >
-                        <Input placeholder="Enter phone number" />
+                        <Input placeholder="Enter restaurant name" />
                     </Form.Item>
-
-                    {/* Year of experience */}
                     <Form.Item
-                        label="Year of Experience"
-                        name="yearOfExpriences"
-                        type="number"
-                        rules={[{ required: true, message: "Please enter year of experience" }]}
+                        label="Booking Date & Time"
+                        name="bookingDateTime"
+                        rules={[{ required: true, message: "Please select booking date & time" }]}
                     >
-                        <Input placeholder="Enter year of experience" />
+                        <Input placeholder="Enter booking date & time" />
                     </Form.Item>
-
-                    {/* Image Upload */}
                     <Form.Item
-                        label="Image"
-                        name="image"
-                        rules={[{ required: true, message: "Please upload an image" }]}
+                        label="Number of Seats"
+                        name="numberOfSeats"
+                        rules={[{ required: true, message: "Please enter number of seats" }]}
                     >
-                        <Upload
-                            listType="picture"
-                            maxCount={1}
-                            onChange={handleImageUpload}
-                        >
-                            <Button icon={<UploadOutlined />}>Upload</Button>
-                        </Upload>
+                        <Input type="number" placeholder="Enter number of seats" />
                     </Form.Item>
-
-                    <div className="flex justify-end mt-4">
-                        <Button onClick={handleCloseAddModal} className="mr-3">Cancel</Button>
-                        <Button type="primary" htmlType="submit">Add Lawyer</Button>
+                    <Form.Item
+                        label="Booking Amount"
+                        name="bookingAmount"
+                        rules={[{ required: true, message: "Please enter booking amount" }]}
+                    >
+                        <Input placeholder="Enter booking amount" />
+                    </Form.Item>
+                    <Form.Item
+                        label="Booking Status"
+                        name="bookingStatus"
+                        rules={[{ required: true, message: "Please select booking status" }]}
+                    >
+                        <Input placeholder="Enter booking status" />
+                    </Form.Item>
+                    <div className="text-center mt-5">
+                        <Button type="primary" htmlType="submit">Add Booking</Button>
                     </div>
                 </Form>
             </Modal>
@@ -288,4 +271,4 @@ const Lawyera = () => {
     );
 };
 
-export default Lawyera;
+export default CustomerBookings;

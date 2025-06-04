@@ -55,7 +55,9 @@ const router = createBrowserRouter([
     element: (
       // <AdminRoutes>
       // </AdminRoutes>
-      <PrivetRoute>  <MainLayout /></PrivetRoute>
+      // <PrivetRoute>  
+      <MainLayout />
+      // </PrivetRoute>
     ),
     errorElement: <h1>Error</h1>,
     children: [
@@ -84,23 +86,28 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "collaborator",
-        element: <Collaborator />,
-      },
-      {
-        path: "collaborator/:id",
-        element: <CollaboratorDetails />,
+        path: "/all-document",
+        element: <AllDocument />,
       },
 
-      {
-        path: "subscription",
-        element: <Subscription />,
-      },
+      // {
+      //   path: "collaborator",
+      //   element: <Collaborator />,
+      // },
+      // {
+      //   path: "collaborator/:id",
+      //   element: <CollaboratorDetails />,
+      // },
 
-      {
-        path: "earnings",
-        element: <Earnings />,
-      },
+      // {
+      //   path: "subscription",
+      //   element: <Subscription />,
+      // },
+
+      // {
+      //   path: "earnings",
+      //   element: <Earnings />,
+      // },
 
       {
         path: "/notification",
@@ -152,10 +159,7 @@ const router = createBrowserRouter([
 
 
 
-      {
-        path: "/all-document",
-        element: <AllDocument />,
-      },
+
 
 
 

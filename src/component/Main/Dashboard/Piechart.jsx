@@ -1,7 +1,6 @@
 import { PieChart, Pie, Cell } from 'recharts';
 import { Select } from 'antd';
 import { useState } from 'react';
-import { useGetDashboardStatusQuery } from '../../../redux/features/dashboard/dashboardApi';
 
 const sampleData = {
   august: { totalUsers: 15457, totalEmployees: 9457, month: 'August' },
@@ -9,23 +8,18 @@ const sampleData = {
 };
 
 const Piechart = () => {
-
-  const { data: userData, isLoading } = useGetDashboardStatusQuery();
-
-
-
-  const mainData = userData?.usersDataInDifferentTimes[0];
-
+  // Using demo data here
+  const mainData = sampleData.august;
 
   const [month, setMonth] = useState('august');
-  const userRatio = sampleData[month]; // Using sample data here
+  const userRatio = sampleData[month];
 
   const data = [
-    { name: 'Total Users', value: mainData?.users },
-    { name: 'Total Employees', value: mainData?.collaborators },
+    { name: 'Total Users', value: userRatio.totalUsers },
+    { name: 'Total Employees', value: userRatio.totalEmployees },
   ];
 
-  const COLORS = ['#002831', '#92b8c0',];
+  const COLORS = ['#4b1c2f', '#fac955'];
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
@@ -45,14 +39,15 @@ const Piechart = () => {
   };
 
   return (
-    <div className='w-full col-span-full md:col-span-2 bg-white rounded-lg  border border-[#92b8c0]'>
-      <div className='flex justify-between items-center  border-b border-gray-300 py-3'>
-        <div className='pl-3'>
-          <h1 className='font-medium text-6'>User Ratio  {mainData?.month}</h1>
+    <div className="w-full col-span-full md:col-span-2 bg-white rounded-lg border border-[#4b1c2f]">
+      <div className="flex justify-between items-center border-b border-gray-300 py-3">
+        <div className="pl-3">
+          <h1 className="font-medium text-6">User Ratio {mainData.month}</h1>
         </div>
-        <div className='pr-3'>
+        <div className="pr-3">
           <Select
-            defaultValue={month} className='border-none'
+            defaultValue={month}
+            className="border-none"
             style={{ width: 100 }}
             onChange={handleChange}
             options={[
@@ -62,8 +57,8 @@ const Piechart = () => {
           />
         </div>
       </div>
-      <div className='flex justify-around items-center gap-3 mt-3 '>
-        <div className='text-white'>
+      <div className="flex justify-around items-center gap-3 mt-3">
+        <div className="text-white">
           <PieChart width={200} height={200}>
             <Pie
               data={data}
@@ -76,25 +71,30 @@ const Piechart = () => {
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell className='text-white' key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell
+                  className="!text-white"
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                  style={{ color: 'white', fontWeight: 'bold' }} // Directly setting the style here
+                />
               ))}
             </Pie>
           </PieChart>
         </div>
         <div>
-          <div >
-            <div className='flex items-center'>
-              <div className='bg-[#002831] w-3 h-3 mr-1'></div>
-              <p className='text-[10px] font-normal'>Total Users for {mainData?.month}</p>
+          <div>
+            <div className="flex items-center">
+              <div className="bg-[#4b1c2f] w-3 h-3 mr-1"></div>
+              <p className="text-[10px] font-normal">Total Users for {mainData.month}</p>
             </div>
-            <h1 className='text-[18px] font-semibold'>{mainData?.users}k</h1>
+            <h1 className="text-[18px] font-semibold">{mainData.totalUsers}k</h1>
           </div>
-          <div className='mt-[23px]'>
-            <div className='flex items-center'>
-              <div className='bg-[#C8D7DE] w-3 h-3  mr-1'></div>
-              <p className='text-[10px] font-normal'>Total Employees for {mainData?.month}</p>
+          <div className="mt-[23px]">
+            <div className="flex items-center">
+              <div className="bg-[#fac955] w-3 h-3 mr-1"></div>
+              <p className="text-[10px] font-normal">Total Employees for {mainData.month}</p>
             </div>
-            <h1 className='text-[18px] font-semibold'>{mainData?.collaborators}k</h1>
+            <h1 className="text-[18px] font-semibold">{mainData.totalEmployees}k</h1>
           </div>
         </div>
       </div>

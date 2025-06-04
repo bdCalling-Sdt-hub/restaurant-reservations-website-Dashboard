@@ -1,8 +1,54 @@
 import { ConfigProvider, Table, Pagination, Space, message, Modal, Button } from "antd";
 import { useState } from "react";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
-import { useGetDashboardStatusQuery } from "../../../redux/features/dashboard/dashboardApi";
-import { useBlockUserMutation, useUnBlockUserMutation } from "../../../redux/features/user/userApi";
+
+// Mock API Data (Replace with your actual hooks in a real scenario)
+const mockRecentUsers = [
+  {
+    id: 1,
+    fullName: "John Doe",
+    email: "johndoe@example.com",
+    role: "Admin",
+    createdAt: "2022-05-01",
+  },
+  {
+    id: 2,
+    fullName: "Jane Smith",
+    email: "janesmith@example.com",
+    role: "User",
+    createdAt: "2023-01-20",
+  },
+  {
+    id: 3,
+    fullName: "Mark Lee",
+    email: "marklee@example.com",
+    role: "User",
+    createdAt: "2023-03-15",
+  },
+  {
+    id: 4,
+    fullName: "Sara Connor",
+    email: "saraconnor@example.com",
+    role: "Moderator",
+    createdAt: "2022-11-10",
+  },
+  // Add more mock users as needed
+];
+
+// Mock API Response Hook
+const useGetDashboardStatusQuery = () => ({
+  data: { recentUsers: mockRecentUsers },
+  isLoading: false,
+});
+
+// Mock Block/Unblock Mutation Hooks
+const useBlockUserMutation = () => [async (id) => {
+  message.success(`User with ID ${id} has been blocked.`);
+}];
+
+const useUnBlockUserMutation = () => [async (id) => {
+  message.success(`User with ID ${id} has been unblocked.`);
+}];
 
 const RecentTransactions = () => {
   const [searchText, setSearchText] = useState("");
@@ -12,9 +58,11 @@ const RecentTransactions = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null); // Store selected user details
 
+  // Using mocked query hook to get user data
   const { data: userData, isLoading } = useGetDashboardStatusQuery();
   const recentUsers = userData?.recentUsers.slice(0, 8);
 
+  // Mocked Mutation Hooks for Block/Unblock
   const [userBlock] = useBlockUserMutation();
   const [userUnBlock] = useUnBlockUserMutation();
 
@@ -22,11 +70,8 @@ const RecentTransactions = () => {
   const handleUserRemove = async (id) => {
     try {
       const res = await userBlock(id);
-      if (res.error) {
-        message.error(res.error.data.message);
-      }
-      if (res.data) {
-        message.success(res.data.message);
+      if (res) {
+        message.success(res);
       }
     } catch (error) {
       message.error("Something went wrong");
@@ -37,9 +82,11 @@ const RecentTransactions = () => {
   const handleUserUnBlock = async (id) => {
     try {
       const res = await userUnBlock(id);
-      console.log(res);
+      if (res) {
+        message.success(res);
+      }
     } catch (error) {
-      console.log(error);
+      message.error("Something went wrong");
     }
   };
 
@@ -127,8 +174,8 @@ const RecentTransactions = () => {
 
   return (
     <div className="w-full col-span-full md:col-span-6 bg-white rounded-lg">
-      <div className="flex items-center justify-between flex-wrap my-10">
-        <h1 className="text-2xl flex items-center">Recent User</h1>
+      <div className="flex items-center justify-between flex-wrap mt-10 mb-5">
+        <h1 className="text-2xl flex items-center">User Approvals</h1>
       </div>
 
       {/* Table */}
@@ -136,8 +183,8 @@ const RecentTransactions = () => {
         theme={{
           components: {
             Table: {
-              headerBg: "#92b8c0",
-              headerColor: "#000",
+              headerBg: "#4b1c2f",
+              headerColor: "#fff",
               headerBorderRadius: 5,
             },
           },

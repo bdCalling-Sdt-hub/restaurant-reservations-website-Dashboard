@@ -1,34 +1,23 @@
-import { FaDatabase } from "react-icons/fa";
-import { PiCurrencyCircleDollar, PiUsers, PiUsersThreeFill } from "react-icons/pi";
-import { useGetDashboardStatusQuery } from "../../../redux/features/dashboard/dashboardApi";
+import { IoIosTrendingUp } from "react-icons/io";
+
 const Status = () => {
-  const { data, isLoading } = useGetDashboardStatusQuery();
-
-
-
   return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-5">
-      <div className="flex justify-between items-center p-5 rounded-lg border-2 border-gray-200">
-        <div className="size-20 p-3 flex justify-center items-center rounded-full bg-[#002831] text-white  ">
-          <PiUsersThreeFill className="size-10" />
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-center text-4xl font-semibold text-[#222222]">
-            {data?.totalNumberOfUser || "0"}
-          </h1>
-          <h1>Total User</h1>
-        </div>
+    <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* Total User */}
+      <div className="bg-[#4b1c2fd3] text-white p-4 rounded-lg shadow-md">
+        <h3 className="text-2xl font-semibold ">Total User</h3>
+        <p className="text-5xl font-bold my-2">1,000</p>
+        <p className=" text-sm flex items-center gap-2">+11.01% <IoIosTrendingUp /></p>
       </div>
-      <div className="flex justify-between items-center p-5 rounded-lg border-2 border-gray-200">
-        <div className="size-20 p-3 flex justify-center items-center rounded-full bg-[#002831] text-white   ">
-          <PiCurrencyCircleDollar className="size-10" />
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-center text-4xl font-semibold text-[#222222]">
-            ${data?.totalAmountOfEarnings?.amount || "0"}
-          </h1>
-          <h1>Total Donation </h1>
-        </div>
+      <div className="bg-[#4b1c2fd3] text-white p-4 rounded-lg shadow-md">
+        <h3 className="text-2xl font-semibold ">Total User</h3>
+        <p className="text-5xl font-bold my-2">1,000</p>
+        <p className=" text-sm flex items-center gap-2">+11.01% <IoIosTrendingUp /></p>
+      </div>
+      <div className="bg-[#4b1c2fd3] text-white p-4 rounded-lg shadow-md">
+        <h3 className="text-2xl font-semibold ">Total User</h3>
+        <p className="text-5xl font-bold my-2">1,000</p>
+        <p className=" text-sm flex items-center gap-2">+11.01% <IoIosTrendingUp /></p>
       </div>
     </div>
   );
