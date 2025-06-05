@@ -209,7 +209,7 @@ const Settings = () => {
                 </button>
               </p> */}
               <Form.Item className="w-full">
-                <button className="w-full bg-[#038c6d] text-white p-3 text-xl font-semibold rounded-md">Update Password</button>
+                <button className="w-full bg-[#4b1c2f] text-white p-3 text-xl font-semibold rounded-md">Update Password</button>
               </Form.Item>
             </Form>
           </div>
